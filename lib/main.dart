@@ -28,6 +28,8 @@ class MyAuthPage extends StatefulWidget {
 class _MyAuthPageState extends State<MyAuthPage> {
   String newUserEmail = '';
   String newUserPassword = '';
+  String loginUserEmail = '';
+  String loginUserPassword = '';
   String infoText = '';
 
   @override
@@ -74,6 +76,46 @@ class _MyAuthPageState extends State<MyAuthPage> {
                     }
                   },
                   child: Text("ユーザー登録"),
+                ),
+                const SizedBox(height: 8),
+                TextFormField(
+                  decoration: InputDecoration(labelText: "メールアドレス"),
+                  onChanged: (String value) {
+                    setState(() {
+                      loginUserEmail = value;
+                    });
+                  },
+                ),
+                const SizedBox(height: 8),
+                TextFormField(
+                  decoration: InputDecoration(labelText: "パスワード（６文字以上）"),
+                  onChanged: (String value) {
+                    setState(() {
+                      loginUserPassword = value;
+                    });
+                  },
+                ),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: () async {
+                    try {
+                      final FirebaseAuth auth = FirebaseAuth.instance;
+                      final UserCredential result =
+                          await auth.signInWithEmailAndPassword(
+                        email: loginUserEmail,
+                        password: loginUserPassword,
+                      );
+                      final User user = result.user!;
+                      setState(() {
+                        infoText = "ログインOK：${user.email}";
+                      });
+                    } catch (e) {
+                      setState(() {
+                        infoText = "ログインNG:${e.toString()}";
+                      });
+                    }
+                  },
+                  child: Text("ログイン"),
                 ),
                 const SizedBox(height: 8),
                 Text(infoText)
